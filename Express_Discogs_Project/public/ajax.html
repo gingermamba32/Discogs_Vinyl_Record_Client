@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Discogs</title>
+	
+</head>
+<body>
+	<p> HELLO </p>
+	<ul></ul>
+	
+	 
+	 <!-- call on the not built app.js file to increase dom manip --> 
+	<script src="js/jquery-2.1.3.min.js"></script>
+	<script>
+
+		var discogs_url = 'https://api.discogs.com/database/search?';
+		var query = 'nirvana';
+
+		// request an AJAX call
+
+		$(document).ready(function(){
+
+			// $.getJSON(discogs_url, function(data){
+			// 	console.log('success');
+			// 	console.log(data);
+			// })
+			$.ajax({
+				url: discogs_url + 'release_title=' + query + '?jsoncallback=?',
+				dataType: 'jsonp',
+				success: function(){
+					console.log('searchDiscogs');
+					},
+		        error: function() {
+		        	alert('your request not processed');
+		        	 }
+			});
+
+			function searchDiscogs(json) {
+				console.log('Ive been called');
+				var list = json.data.results;
+				console.log(list);
+				var result = '';
+
+				for (var i = 0; i < list.length; i++) {
+					result += '<li><a href="http://www.discogs.com/' + list[i].uri + '"><img src="img/vinyl.png" />';
+					result += '<h2>' + list[i].title + '</h2>';
+					result += '<p>' + list[i].label.join(', ') + ' | ' + list[i].year + '</p></a></li>'
+				}
+
+				console.log(result);
+				$('ul').html(result);
+			}
+
+		});
+
+
+	</script>
+</body>
+</html>
