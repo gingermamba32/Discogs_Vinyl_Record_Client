@@ -1,15 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var Discogs = require('disconnect').Client;
+var cookie = require('cookie-parser');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+var db = new Discogs().database();  //define the database
+
 //get the release data of the id 176126
-var db = new Discogs().database();
 db.release(176126, function(err, data){
-    console.log(data);
+    //console.log(data);
 });
 
 var dis = new Discogs('MyUserAgent/1.0');
@@ -17,7 +19,7 @@ var dis = new Discogs('MyUserAgent/1.0');
 
 var collection = new Discogs().user().collection();
 collection.releases('mpmonter', 0, {page: 1, per_page: 75}, function(err, data){
-    console.log(data);
+    //console.log(data); testing to see if this collection shows up
 });
 
 
@@ -65,10 +67,35 @@ router.get('/callback', function(req, res){
 router.get('/identity', function(req, res){
     var dis = new Discogs(accessData);
     dis.identity(function(err, data){
-        res.send(data);
+        //res.send(data);
     });
 });
 
+
+//create a router POST request to take the data from the 
+//form and return the information that i need
+
+//get the release data of the id 176126...test id
+
+router.post('/', function(req, res){
+	var searchFeature = Number(req.body.id); 
+	db.release(searchFeature, function(err,data){
+        var record = data;
+		// console.log(record);
+        console.log(JSON.stringify(record.artists));
+        res.render('index', {title: 'express', records: record.artists});
+	}); 
+});
+
+
+
+
+//would like to have a few search queries through forms  
+//like all record releases by artist or specific record by catalogue number
+//must take the data that I query and print it back onto the page
+
+//need to print the results back on the page
+////How to access and image
 // var db = new Discogs(accessData).database();
 // db.release(176126, function(err, data){
 //     var url = data.images[0].resource_url;
@@ -80,5 +107,14 @@ router.get('/identity', function(req, res){
 //     });
 // });
 
+
+//*************************OAUTH TOKENS**************
+//Current token: iQIvxFAHoCXkKvCWrzzOGJNIXNumtSFoTwKvdBiF
+
+//Consumer Key	FTxlBjxbqGnyKJBpHDIs
+// Consumer Secret	aoVHjxXQhJjucSoJctZmNMTmNOuJkgAw
+// Request Token URL	http://api.discogs.com/oauth/request_token
+// Authorize URL	http://www.discogs.com/oauth/authorize
+// Access Token URL	http://api.discogs.com/oauth/access_token
 
 module.exports = router;
